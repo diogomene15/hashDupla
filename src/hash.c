@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "hash.h"
 #include "./problema1/problema1.h"
 #define SEED    0x12345678
@@ -28,6 +29,15 @@ uint32_t hashf(const char* str, uint32_t h){
     return h;
 }
 
+int getNumDigits(int pos){
+    if(pos == 0) return 1;
+    int size = 0;
+    while(pos > 0){
+        pos/=10;
+        size++;
+    }
+    return size;
+}
 
 int hash_insere(thash * h, void * bucket){
     uint32_t hash = hashf(h->get_key(bucket),SEED);
@@ -37,10 +47,17 @@ int hash_insere(thash * h, void * bucket){
         grow_hash(h);
 //        return EXIT_FAILURE;
     }else{
+        int secondHashDif = 0;
         while(h->table[pos] != 0){
             if (h->table[pos] == h->deleted)
                 break;
-            pos = (pos +1) % h->max;
+            unsigned long long tamChars = getNumDigits(pos);
+            char posStr[tamChars+1];
+            snprintf(&posStr, tamChars+1, "%d", pos);
+            secondHashDif = (secondHashDif + hashf(posStr, SEED2) % (h->max -1))% (h->max -1);
+            secondHashDif*=secondHashDif;
+            pos = ((pos) + secondHashDif) %(h->max);
+            secondHashDif++;
         }
         h->table[pos] = (uintptr_t) bucket;
         h->size +=1;
@@ -51,11 +68,11 @@ int hash_insere(thash * h, void * bucket){
 
 
 int hash_constroi(thash * h,int nbuckets, char * (*get_key)(void *) ){
-    h->table = calloc(sizeof(uintptr_t),nbuckets +1);
+    h->max = nbuckets*1.3 + 1;
+    h->table = calloc(h->max,sizeof(uintptr_t));
     if (h->table == NULL){
         return EXIT_FAILURE;
     }
-    h->max = nbuckets +1;
     h->size = 0;
     h->deleted = (uintptr_t) & (h->size);
     h->get_key = get_key;
@@ -65,13 +82,17 @@ int hash_constroi(thash * h,int nbuckets, char * (*get_key)(void *) ){
 
 void * hash_busca(thash h, const char * key){
     int pos = hashf(key,SEED) %(h.max);
+    int secondHashDif = 0;
     while(h.table[pos] != 0){
         if (strcmp (h.get_key((void*)h.table[pos]),key) ==0)
             return (void *)h.table[pos];
-        else{
-            int secondHashDif = hashf(key, SEED2) % (h.max-1);
-            pos = ((pos) + secondHashDif) %(h.max);
-        }
+        unsigned long long tamChars = getNumDigits(pos);
+        char posStr[tamChars+1];
+        snprintf(&posStr, tamChars+1, "%d", pos);
+        secondHashDif = (secondHashDif + hashf(posStr, SEED2) % (h.max -1))% (h.max -1);
+        secondHashDif*=secondHashDif;
+        pos = ((pos) + secondHashDif) %(h.max);
+        secondHashDif++;
     }
     return NULL;
 }
