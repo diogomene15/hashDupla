@@ -117,8 +117,6 @@ void lerMunicipio(municipio*** listaMunicipios, int* numMunicipios){
 
 }
 
-municipio** lerMunicipios(int* numMunicipios){
-    municipio** municipios;
-    lerMunicipio(&municipios, numMunicipios);
-    return municipios;
+void lerMunicipios(municipio*** municipios, int* numMunicipios){
+    lerMunicipio(municipios, numMunicipios);
 }

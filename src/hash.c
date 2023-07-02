@@ -4,16 +4,13 @@
 #include "hash.h"
 #include "./problema1/problema1.h"
 #define SEED    0x12345678
-
-char * get_key(void * reg){
-    return (*((municipio *)reg)).codIBGE;
-}
+#define SEED2    0x83741237
 
 void grow_hash(thash* h){
-    int novoTam = h->size + 20;
+    int novoTam = h->max + 20;
     uintptr_t* newTable = calloc(novoTam, sizeof(uintptr_t));
-    for(int i=0; i< h->size; i++){
-        *(newTable+i) = (*(h->table)+i);
+    for(int i=0; i< h->max; i++){
+        *(newTable+i) = *((h->table)+i);
     }
     free(h->table);
     h->table = newTable;
@@ -35,8 +32,8 @@ uint32_t hashf(const char* str, uint32_t h){
 int hash_insere(thash * h, void * bucket){
     uint32_t hash = hashf(h->get_key(bucket),SEED);
     int pos = hash % (h->max);
-    if (h->max == (h->size+1)){
-        free(bucket);
+    if (h->max <= (h->size+1)){
+//        free(bucket);
         grow_hash(h);
 //        return EXIT_FAILURE;
     }else{
@@ -71,8 +68,10 @@ void * hash_busca(thash h, const char * key){
     while(h.table[pos] != 0){
         if (strcmp (h.get_key((void*)h.table[pos]),key) ==0)
             return (void *)h.table[pos];
-        else
-            pos = (pos+1)%(h.max);
+        else{
+            int secondHashDif = hashf(key, SEED2) % (h.max-1);
+            pos = ((pos) + secondHashDif) %(h.max);
+        }
     }
     return NULL;
 }

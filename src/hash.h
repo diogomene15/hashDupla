@@ -13,7 +13,6 @@ typedef struct {
     char * (*get_key)(void *);
 }thash;
 
-char * get_key(void * reg);
 int hash_insere(thash * h, void * bucket);
 int hash_constroi(thash * h,int nbuckets, char * (*get_key)(void *) );
 void * hash_busca(thash h, const char * key);
