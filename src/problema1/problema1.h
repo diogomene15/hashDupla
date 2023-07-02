@@ -33,5 +33,5 @@ typedef struct regEstado{
     char ufEstado[TAM_UF_ESTADO];
     char regiao[TAM_REGIAO];
 }estado;
-municipio** montarArvoreMunicipios();
+municipio** lerMunicipios(int* numMunicipios);
 #endif //PROBLEMA1_H
