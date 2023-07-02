@@ -3,7 +3,6 @@
 #include <string.h>
 #include <stdio.h>
 #include "hash.h"
-#include "./problema1/problema1.h"
 #define SEED    0x12345678
 #define SEED2    0x83741237
 
@@ -41,7 +40,7 @@ int getNumDigits(int pos){
 
 int hash_insere(thash * h, void * bucket){
     uint32_t hash = hashf(h->get_key(bucket),SEED);
-    int pos = hash % (h->max);
+    int pos = (int) (hash % (h->max));
     if (h->max <= (h->size+1)){
 //        free(bucket);
         grow_hash(h);
@@ -53,8 +52,8 @@ int hash_insere(thash * h, void * bucket){
                 break;
             unsigned long long tamChars = getNumDigits(pos);
             char posStr[tamChars+1];
-            snprintf(&posStr, tamChars+1, "%d", pos);
-            secondHashDif = (secondHashDif + hashf(posStr, SEED2) % (h->max -1))% (h->max -1);
+            snprintf((char *) &posStr, tamChars + 1, "%d", pos);
+            secondHashDif = (int) ((secondHashDif + hashf(posStr, SEED2) % (h->max -1))% (h->max -1));
             secondHashDif*=secondHashDif;
             pos = ((pos) + secondHashDif) %(h->max);
             secondHashDif++;
@@ -68,7 +67,7 @@ int hash_insere(thash * h, void * bucket){
 
 
 int hash_constroi(thash * h,int nbuckets, char * (*get_key)(void *) ){
-    h->max = nbuckets*1.3 + 1;
+    h->max = (int)(nbuckets*1.3) + 1;
     h->table = calloc(h->max,sizeof(uintptr_t));
     if (h->table == NULL){
         return EXIT_FAILURE;
@@ -81,15 +80,15 @@ int hash_constroi(thash * h,int nbuckets, char * (*get_key)(void *) ){
 
 
 void * hash_busca(thash h, const char * key){
-    int pos = hashf(key,SEED) %(h.max);
+    int pos = (int) (hashf(key,SEED) %(h.max));
     int secondHashDif = 0;
     while(h.table[pos] != 0){
         if (strcmp (h.get_key((void*)h.table[pos]),key) ==0)
             return (void *)h.table[pos];
         unsigned long long tamChars = getNumDigits(pos);
         char posStr[tamChars+1];
-        snprintf(&posStr, tamChars+1, "%d", pos);
-        secondHashDif = (secondHashDif + hashf(posStr, SEED2) % (h.max -1))% (h.max -1);
+        snprintf((char *)&posStr, tamChars+1, "%d", pos);
+        secondHashDif = (int)((secondHashDif + hashf(posStr, SEED2) % (h.max -1))% (h.max -1));
         secondHashDif*=secondHashDif;
         pos = ((pos) + secondHashDif) %(h.max);
         secondHashDif++;
@@ -98,7 +97,7 @@ void * hash_busca(thash h, const char * key){
 }
 
 int hash_remove(thash * h, const char * key){
-    int pos = hashf(key,SEED) % (h->max);
+    int pos = (int) (hashf(key,SEED) % (h->max));
     while(h->table[pos]!=0){
         if (strcmp (h->get_key((void*)h->table[pos]),key) ==0){
             free((void *) h->table[pos]);

@@ -1,7 +1,3 @@
-//
-// Created by diogo on 02/07/2023.
-//
-
 #ifndef HASH_FACOM_LIB
 #define HASH_FACOM_LIB
 #include <stdlib.h>
@@ -19,3 +15,5 @@ void * hash_busca(thash h, const char * key);
 int hash_remove(thash * h, const char * key);
 void hash_apaga(thash *h);
 #endif //HASH_FACOM_LIB
+
+//Por: Diogo Menezes - 202219060206

@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <stdio.h>
 #include <string.h>
-#include "../src/hash.h"
+#include "../src/hash/hash.h"
 #include "../src/problema1/problema1.h"
 char * get_key(void * reg){
     return (*((municipio *)reg)).codIBGE;
